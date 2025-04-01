@@ -1,1 +1,0 @@
-# Bug Bountry Platform powered by 
