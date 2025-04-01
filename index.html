@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bounty Board</title>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    .container {
+      width: 50%;
+      margin: 0 auto;
+    }
+    .button {
+      padding: 10px;
+      margin: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Bounty Board</h2>
+
+    <!-- Task Creation Section -->
+    <h3>Create Task</h3>
+    <input type="text" id="taskDescription" placeholder="Task Description">
+    <input type="number" id="taskReward" placeholder="Reward (in ETH)">
+    <button class="button" onclick="createTask()">Create Task</button>
+
+    <!-- Assign Task Section -->
+    <h3>Assign Task</h3>
+    <input type="number" id="assignTaskId" placeholder="Task ID to Assign">
+    <input type="text" id="assignAssignee" placeholder="Assignee Address">
+    <button class="button" onclick="assignTask()">Assign Task</button>
+
+    <!-- Complete Task Section -->
+    <h3>Complete Task</h3>
+    <input type="number" id="completeTaskId" placeholder="Task ID to Complete">
+    <button class="button" onclick="completeTask()">Complete Task</button>
+
+    <!-- Distribute Reward Section -->
+    <h3>Distribute Reward</h3>
+    <input type="number" id="distributeTaskId" placeholder="Task ID to Distribute Reward">
+    <button class="button" onclick="distributeReward()">Distribute Reward</button>
+  </div>
+
+  <script>
+    // Set up Web3 and contract
+    let web3;
+    let contract;
+    const contractAddress = '0xE2099EE2D5456998C6eae7AeA6FaC681efc3D802';
+    const contractABI = [
+      {
+        "inputs": [
+          { "internalType": "string", "name": "_description", "type": "string" },
+          { "internalType": "uint256", "name": "_reward", "type": "uint256" }
+        ],
+        "name": "createTask",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "_taskId", "type": "uint256" },
+          { "internalType": "address payable", "name": "_assignee", "type": "address" }
+        ],
+        "name": "assignTask",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "_taskId", "type": "uint256" }
+        ],
+        "name": "completeTask",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [
+          { "internalType": "uint256", "name": "_taskId", "type": "uint256" }
+        ],
+        "name": "distributeReward",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+      },
+      {
+        "inputs": [],
+        "name": "taskCount",
+        "outputs": [
+          { "internalType": "uint256", "name": "", "type": "uint256" }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+      }
+    ];
+
+    // Initialize Web3 and Contract
+    if (typeof window.ethereum !== 'undefined') {
+      web3 = new Web3(window.ethereum);
+      window.ethereum.request({ method: 'eth_requestAccounts' })
+        .then(() => {
+          contract = new web3.eth.Contract(contractABI, contractAddress);
+        });
+    } else {
+      alert('Please install MetaMask');
+    }
+
+    // Create Task
+    async function createTask() {
+      const description = document.getElementById('taskDescription').value;
+      const reward = document.getElementById('taskReward').value;
+      const accounts = await web3.eth.getAccounts();
+
+      contract.methods.createTask(description, web3.utils.toWei(reward, 'ether'))
+        .send({ from: accounts[0] })
+        .on('receipt', (receipt) => {
+          console.log('Task Created:', receipt);
+        });
+    }
+
+    // Assign Task
+    async function assignTask() {
+      const taskId = document.getElementById('assignTaskId').value;
+      const assignee = document.getElementById('assignAssignee').value;
+      const accounts = await web3.eth.getAccounts();
+
+      contract.methods.assignTask(taskId, assignee)
+        .send({ from: accounts[0] })
+        .on('receipt', (receipt) => {
+          console.log('Task Assigned:', receipt);
+        });
+    }
+
+    // Complete Task
+    async function completeTask() {
+      const taskId = document.getElementById('completeTaskId').value;
+      const accounts = await web3.eth.getAccounts();
+
+      contract.methods.completeTask(taskId)
+        .send({ from: accounts[0] })
+        .on('receipt', (receipt) => {
+          console.log('Task Completed:', receipt);
+        });
+    }
+
+    // Distribute Reward
+    async function distributeReward() {
+      const taskId = document.getElementById('distributeTaskId').value;
+      const accounts = await web3.eth.getAccounts();
+
+      contract.methods.distributeReward(taskId)
+        .send({ from: accounts[0] })
+        .on('receipt', (receipt) => {
+          console.log('Reward Distributed:', receipt);
+        });
+    }
+  </script>
+</body>
+</html>
