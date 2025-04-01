@@ -35,15 +35,7 @@ The **BountyBoard** project includes both a **smart contract** and a **frontend*
    ```
 2. Install dependencies:
    ```sh
-   npm install
-   ```
-3. Compile the contract:
-   ```sh
-   npx hardhat compile
-   ```
-4. Deploy the contract (modify `deploy.js` if necessary):
-   ```sh
-   npx hardhat run scripts/deploy.js --network opencampus
+   python3 -m http.server
    ```
 5. **Deployed Contract Address**: 🏛 `0xE2099EE2D5456998C6eae7AeA6FaC681efc3D802`
 
@@ -52,13 +44,10 @@ The **BountyBoard** project includes both a **smart contract** and a **frontend*
    ```sh
    cd frontend
    ```
-2. Install dependencies:
+
+2. Start the development server:
    ```sh
-   npm install
-   ```
-3. Start the development server:
-   ```sh
-   npm start
+   python3 -m http.server
    ```
 4. Open `http://localhost:3000` in your browser. 🌐
 
